@@ -1,0 +1,167 @@
+                                                         ## SDK Commends to RUN GCP Console#####
+
+1.connect to GCP through SDK
+	gcloud init
+
+2.Pick configuration to use:
+ [1] Re-initialize this configuration [default] with new settings
+ [2] Create a new configuration
+
+ chose what you want
+
+3.Choose the account you would like to use to perform operations for this configuration:
+ [1] karinki.manikanta30@gmail.com
+ [2] Log in with a new account
+
+ chose which mail id you login to gcp Console
+
+4.Pick cloud project to use:
+ [1] academic-motif-333015
+ [2] blesson-project1
+ [3] even-archway-332212
+ [4] gifted-veld-333006
+ [5] mani-333104
+ [6] marine-fusion-332515
+ [7] noble-conduit-332515
+ [8] total-pad-332502
+ [9] Create a new project
+
+ chose the which project you are working
+
+5.Do you want to configure a default Compute Region and Zone? (Y/n)?
+
+     if you want to change the region type y other wise type n
+
+
+################ gsutil Commends #####################
+
+6.if you want to create sorage bucket in gcp
+         gsutil mb gs://bucketname
+         
+
+7.if you want to transfer the file or table to bucket
+
+         gsutil cp file_path gs://bucketname/
+            
+            
+8.we can see the list of the file in the bucket
+         gsutil ls gs://bucketname
+
+9.remove the bucket
+         gsutil rb gs://bucket/
+
+10. it display the data inside the file information.
+         gsutil cat   gs://bucket/filename
+
+11.it used to remove the object(image) in the bucket or we can delete bucket also
+        gsutil rm gs://bucketname/object.png
+
+12.it display the pracent version of gsutil
+        gsutil version
+
+13.To list the size of each object in a bucket
+        gsutil du gs://bucketname
+
+14.To include the total number of bytes in human-readable form:
+              gsutil du -ch gs://bucketname
+
+
+############################## BQ Commends ##################################
+
+1.See the list of the dataset in the big query
+      bq ls 
+
+2.create the dataset inside the Bigquery.
+      bq mk datasetname  
+
+3.Remove the dataset inside the Bigequery
+      bq -r rm datasetname
+
+4.create the table with out schema(with out column names).
+	  bq mk -t mydataset.tablename
+
+5.create the table with sechma
+	  bq mk -t mydataset.tablename id:int,name:string
+
+6.you can see the data of the table
+      bq query "select * from datasetname.tablename"
+
+7.it show ths information about table
+      bq show datasetname.tablename
+
+8.insert values in query
+      bq query --use_legacy_sql=false "insert into dataset_name.tablename(schema)values(enter the records)"
+
+9.select the table
+      bq query "select * from datasetname.tablename" 
+
+10. creating the view for the table in the dataset
+      bq mk --use_legacy_sql=false --view "select * from datasetname.tablename"  datasetname.tablename_view 
+                    tablename: you are table
+                    tablename_view: after view creation table saving the tablename_view  
+
+11. create view in particular country or place 
+      create or replace view `projectid.datasetname.tablename` as select * from `projectid.datasetname.tablename` where country ='China'  
+
+12. update the values into the table
+      update  `projectid.datasetname.tablename` set car_type='benz' where id=9
+
+
+######################### Load the CSV data file in onprimeses to Bigquery data warehouse ############################
+
+*****Before moving to data into big query i can create dataset in big query*****
+
+1.Loading the table to biq quey dataset for the Biq query commends
+
+     bq load --source_format=CSV  --autodetect datasetname.tablename "E:\CDE\Data\categories.csv" 
+
+2.list of the files in the biq query dataset 
+
+     bq ls datasetname
+
+3.create a table in the biq query
+
+     bq mk -t datasetname.new_table category_key:string,category_name:string,ca_date:DATE 
+     ca_date is the new column to add the new_table file
+
+4.Data can move to the new table with extra column with timestamp
+
+     bq query --use_legacy_sql=false INSERT  INTO datasetname.new_table select category_key,category_name,current_date() 
+     as ca_date from `projectid.datasetname.firsttable(sourcetable)`
+
+
+5.Creating the view in csv file in history bucket
+
+     bq query --use_legacy_sql=false create view `projectid.datasetname.view_table_name` as select * from `projectid.datasetname.new_table
+     (extra add cloumn table)`
+
+6.We can see the data in table
+
+     bq query "select * from datasetname.tablename"
+
+
+################################ Load the JSON data file in onprimeses to Bigquery data warehouse ##########################################
+
+******** first step We can convert first json file to "newline_delimited_json" ********
+
+1.After conversion file loaded to  bigquery
+    bq load --source_format=NEWLINE_DELIMITED_JSON --autodetect datasetname.tablename C:\Users\Manikanta\Downloads\nd-proceesed1.json
+
+2.select the query in limit
+    bq query "select * from covid_sample limit 10"
+
+3. Created the new table with schema and extra column
+    bq mk -t datasetname.new_table population_urban:int64,population_female:int64,population_male:int64,population_rural:int64,place_id:string,population:int64,country_code_string,country_name:string,date:date,datformate:timestamp
+
+4.Insert into the data to own table to new table
+    bq query --use_legacy_sql=false INSERT  INTO dataset.extra_column_table select population_urban,population_female,population_male,population_rural,place_id,population,country_code,country_name,date,current_timestamp() as datformate from `projectid.datasetname.loaded_table`
+
+5.After that we can see the new table
+    bq query "select * from mani.covid limit 10"
+
+6.creating the view for the new table
+    bq query --use_legacy_sql=false create view `projectid.datasetname.tablename_view` as select population_urban,population_rural from `projectid.dataset.extra_column_added_table`
+
+
+
+
